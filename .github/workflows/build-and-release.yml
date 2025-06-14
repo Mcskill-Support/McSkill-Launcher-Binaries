@@ -123,7 +123,7 @@ jobs:
 
   release:
     name: Create GitHub Release
-    needs: [build-all, build-linux-arm64]
+    needs: [build-all]
     runs-on: ubuntu-latest
 
     steps:
