@@ -40,14 +40,37 @@ jobs:
 
       - name: Build binary
         run: |
-          pyinstaller main.py --name main-${{ matrix.target }} --onefile --noupx
+          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            pyinstaller main.py --name "McSkillLauncher" --onefile --windowed --noupx
+          else
+            pyinstaller main.py --name main-${{ matrix.target }} --onefile --noupx
+          fi
+        shell: bash
+
+      - name: Package macOS .app
+        if: matrix.os == 'macos-latest'
+        run: |
+          mkdir -p build
+          cp -R dist/McSkillLauncher.app build/
+          cd build
+          zip -r ../mcskill-launcher-macos-x64.zip McSkillLauncher.app
+        shell: bash
 
       - name: Move output
+        if: matrix.os != 'macos-latest'
         run: |
           mv dist/main-${{ matrix.target }}${{ matrix.ext }} mcskill-launcher-${{ matrix.target }}${{ matrix.ext }}
         shell: bash
 
-      - name: Upload artifact
+      - name: Upload macOS artifact
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin-macos-x64
+          path: mcskill-launcher-macos-x64.zip
+
+      - name: Upload other artifacts
+        if: matrix.os != 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: bin-${{ matrix.target }}
