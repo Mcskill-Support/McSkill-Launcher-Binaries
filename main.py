@@ -9,8 +9,14 @@ import tarfile
 from colorama import init, Fore, Style
 import tkinter as tk
 from tkinter import messagebox
+import ssl
+import certifi
 
 init()
+
+# Примусово вказати шлях до сертифікатів
+ssl._create_default_https_context = ssl.create_default_context
+ssl.create_default_context = lambda: ssl.create_default_context(cafile=certifi.where())
 
 BASE_URL = "https://mcskill.net/McSkill.jar"
 INSTALL_DIR = os.path.join(os.path.expanduser("~"), "McSkill")
@@ -29,7 +35,6 @@ def print_error(message):
 def get_jdk_url():
     system = platform.system()
     arch = platform.machine()
-
     suffix = {"x86_64": "x64", "AMD64": "x64", "aarch64": "aarch64", "arm64": "aarch64"}.get(arch)
     if not suffix:
         raise RuntimeError(f"Unsupported architecture: {arch}")

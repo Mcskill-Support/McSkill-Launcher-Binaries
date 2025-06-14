@@ -47,12 +47,28 @@ jobs:
           fi
         shell: bash
 
-      - name: Prepare .app zip (macOS)
+      - name: Replace Info.plist and set icon (macOS)
         if: matrix.os == 'macos-latest'
         run: |
+          cp Info.plist dist/McSkillLauncher.app/Contents/Info.plist
+          cp icon.icns dist/McSkillLauncher.app/Contents/Resources/icon.icns || true
           chmod +x dist/McSkillLauncher.app/Contents/MacOS/McSkillLauncher
-          ditto -c -k --keepParent dist/McSkillLauncher.app mcskill-launcher-macos-x64.zip
         shell: bash
+
+      - name: Create .dmg (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          mkdir dmg-tmp
+          cp -R dist/McSkillLauncher.app dmg-tmp/
+          hdiutil create -volname "McSkillLauncher" -srcfolder dmg-tmp -ov -format UDZO mcskill-launcher-macos-x64.dmg
+        shell: bash
+
+      - name: Upload macOS .dmg
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin-macos-x64
+          path: mcskill-launcher-macos-x64.dmg
 
       - name: Move output (Linux/Windows)
         if: matrix.os != 'macos-latest'
