@@ -19,7 +19,10 @@ ssl._create_default_https_context = ssl.create_default_context
 ssl.create_default_context = lambda: ssl.create_default_context(cafile=certifi.where())
 
 BASE_URL = "https://mcskill.net/McSkill.jar"
-INSTALL_DIR = os.path.join(os.path.expanduser("~"), "McSkill")
+if platform.system() == "Windows":
+    INSTALL_DIR = os.path.join("C:\\Users\\Public", "McSkill")
+else:
+    INSTALL_DIR = os.path.join(os.path.expanduser("~"), "McSkill")
 JAR_PATH = os.path.join(INSTALL_DIR, "McSkill.jar")
 JDK_DIR = os.path.join(INSTALL_DIR, "jdk")
 
